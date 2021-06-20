@@ -1,39 +1,39 @@
 package com.vcorreia.liteplayer
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
-import androidx.leanback.media.MediaPlayerAdapter
 import androidx.leanback.media.PlaybackTransportControlGlue
-import androidx.leanback.widget.PlaybackControlsRow
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter
 
 /** Handles video playback with media controls. */
 class PlaybackVideoFragment : VideoSupportFragment() {
 
-    private lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
+    private lateinit var exoPlayer: SimpleExoPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val (_, title, description, _, _, videoUrl) =
-                activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
+        exoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
 
-        val glueHost = VideoSupportFragmentGlueHost(this@PlaybackVideoFragment)
-        val playerAdapter = MediaPlayerAdapter(context)
-        playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE)
+        exoPlayer.setVideoSurfaceView(surfaceView)
 
-        mTransportControlGlue = PlaybackTransportControlGlue(getActivity(), playerAdapter)
-        mTransportControlGlue.host = glueHost
-        mTransportControlGlue.title = title
-        mTransportControlGlue.subtitle = description
-        mTransportControlGlue.playWhenPrepared()
+        val leanbackPlayerAdapter = LeanbackPlayerAdapter(requireContext(), exoPlayer, 16)
+        val playerGlue = PlaybackTransportControlGlue(getActivity(), leanbackPlayerAdapter)
+        playerGlue.setHost(VideoSupportFragmentGlueHost(this))
+        playerGlue.playWhenPrepared()
 
-        playerAdapter.setDataSource(Uri.parse(videoUrl))
+        val testUri = "http://bofh.nikhef.nl/events/FOSDEM/2021/D.openjdk/modernjava.webm"
+        val mediaItem: MediaItem = MediaItem.fromUri(testUri)
+
+        exoPlayer.addMediaItem(mediaItem)
+        exoPlayer.prepare()
     }
 
     override fun onPause() {
         super.onPause()
-        mTransportControlGlue.pause()
+        exoPlayer.pause()
     }
 }

@@ -6,7 +6,9 @@ import java.io.Serializable
  * Movie class represents video entity with title, description, image thumbs and video url.
  */
 data class ScheduleEvent(
-        var title: String? = null
+        var title: String? = null,
+        var url: String? = null,
+        var cardImageUrl: String? = null
 ) : Serializable {
 
     companion object {
@@ -14,6 +16,7 @@ data class ScheduleEvent(
     }
 
     override fun toString(): String {
-        return "ScheduleEvent(title=$title)"
+        return "ScheduleEvent(title=$title, url=$url)"
     }
+
 }

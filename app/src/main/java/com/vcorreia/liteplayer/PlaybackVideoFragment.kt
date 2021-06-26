@@ -25,8 +25,8 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         playerGlue.setHost(VideoSupportFragmentGlueHost(this))
         playerGlue.playWhenPrepared()
 
-        val testUri = "http://bofh.nikhef.nl/events/FOSDEM/2021/D.openjdk/modernjava.webm"
-        val mediaItem: MediaItem = MediaItem.fromUri(testUri)
+        val testUri = activity?.intent?.getStringExtra("EVENT_URL")
+        val mediaItem: MediaItem = MediaItem.fromUri(testUri!!)
 
         exoPlayer.addMediaItem(mediaItem)
         exoPlayer.prepare()
